@@ -1,30 +1,30 @@
-import { h, mount } from "../framework/src/index.js";
+import { h, mount, createStore } from "../framework/src/index.js";
 
-let count = 0;
+const store = createStore({ count: 0 });
 
 function App() {
-  return h("div", { class: "card", style: { border: "1px solid #ccc", padding: "12px", borderRadius: "8px" } }, [
-    h("p", {}, ["Count: ", String(count)]),
+  const state = store.get();
+
+  return h("div", {}, [
+    h("p", {}, ["Count: ", String(state.count)]),
     h(
       "button",
       {
         on: {
           click: (e) => {
             e.preventDefault();
-            e.stopPropagation();
-            count++;
-            rerender();
+            store.set((s) => ({ ...s, count: s.count + 1 }));
           },
         },
       },
-      ["+1 (stopPropagation)"]
+      ["+1"]
     ),
   ]);
 }
 
 function rerender() {
-  const root = document.getElementById("app");
-  mount(App(), root);
+  mount(App(), document.getElementById("app"));
 }
 
+store.subscribe(rerender);
 rerender();
