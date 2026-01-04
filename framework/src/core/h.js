@@ -10,7 +10,7 @@ export function h(type, props = {}, ...children) {
     children: flatChildren,
   };
 }
-
+// read more -> p. 51 in "Build Frontend Web Framework"
 // in the framework this is used to create elements
 // in other frameworks this is called createElement
 // but h is a common convention in many virtual DOM libraries

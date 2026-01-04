@@ -54,3 +54,6 @@ export function createStore(initialState = {}, options = {}) {
 
   return { get, set, subscribe };
 }
+
+// Note: persistence is optional and can be enabled by passing a persistKey 
+// in app.js we create persisKey = "example-state" to enable it

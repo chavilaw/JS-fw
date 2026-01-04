@@ -1,15 +1,41 @@
-import { h, mount, createStore } from "../framework/src/index.js";
+import { h, mount, createStore, createHashRouter } from "../framework/src/index.js";
+import { HomePage } from "./pages/home.js";
+import { AboutPage } from "./pages/about.js";
+import { NotFoundPage } from "./pages/notFound.js";
+import { TodosPage } from "./pages/todos.js";
 
+// Persisted app state 
 const store = createStore(
-  { count: 0 },
+  {
+    count: 0,
+    todos: [],
+    todosLoaded: false,
+  },
   { persistKey: "example-state" }
 );
 
+// Router: path -> component factory
+const router = createHashRouter({
+  "/": () => HomePage(),
+  "/about": () => AboutPage(),
+  "/todos": () => TodosPage(store),
+  "*": () => NotFoundPage(),
+});
 
-function App() {
+function Nav() {
+  return h("nav", { style: { marginBottom: "12px" } }, [
+    h("a", { href: "#/" }, ["Home"]),
+    " | ",
+    h("a", { href: "#/todos" }, ["Todos"]),
+    " | ",
+    h("a", { href: "#/about" }, ["About"]),
+  ]);
+}
+
+function CounterCard() {
   const state = store.get();
 
-  return h("div", {}, [
+  return h("div", { style: { border: "1px solid #ccc", padding: "12px", borderRadius: "8px", marginBottom: "12px" } }, [
     h("p", {}, ["Count: ", String(state.count)]),
     h(
       "button",
@@ -23,7 +49,6 @@ function App() {
       },
       ["+1"]
     ),
-
     h(
       "button",
       {
@@ -31,7 +56,7 @@ function App() {
         on: {
           click: (e) => {
             e.preventDefault();
-            store.set({ count: 0 });
+            store.set((s) => ({ ...s, count: 0 }));
           },
         },
       },
@@ -40,9 +65,29 @@ function App() {
   ]);
 }
 
+function App() {
+  const Page = router.getComponent();
+
+  return h("div", {}, [
+    Nav(),
+    CounterCard(),
+    Page ? Page() : NotFoundPage(),
+  ]);
+}
+
 function rerender() {
   mount(App(), document.getElementById("app"));
 }
 
+// Re-render on state change
 store.subscribe(rerender);
+
+// Re-render on route change
+router.subscribe(rerender);
+router.start();
+
+// Attach link interception once (framework-controlled navigation)
+router.attachLinkInterceptor(document.getElementById("app"));
+
+// Initial render
 rerender();
