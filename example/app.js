@@ -11,12 +11,13 @@ function App() {
         on: {
           click: (e) => {
             e.preventDefault();
+            e.stopPropagation();
             count++;
             rerender();
           },
         },
       },
-      ["+1"]
+      ["+1 (stopPropagation)"]
     ),
   ]);
 }

@@ -1,46 +1,45 @@
-import { pipeline } from "stream";
+import { ensureRootListener, registerEventHandler } from "../events/delegation.js";
 
-function setProperty(el, props) {
-    for (const [key, value] of Object.entries(props)) {
-        if (key === "style" && value && typeof value === "object") {
-            Object.assign(el.style, value);
-            continue
-        }
-
-        if (key === "class" || key === "className") {
-        el.className = value ?? "";
-        continue;
-        }
-
-        // OOPS this is temporarty have to change to satifyi the "not just addEventlistener"
-        if (key === "on" && typeof value === "object") {
-        for (const [eventName, handler] of Object.entries(value)) {
-            if (typeof handler === "function") {
-            el.addEventListener(eventName, handler);
-            }
-        }
-            continue;
-        }
-
-        // boolean attributes
-        if (typeof value === "boolean") {
-        if (value) {
-            el.setAttribute(key, "");
-        } else {
-            el.removeAttribute(key);
-        }
-        continue;
-        }   
-
-
-        // normal attributes
-        if (value != null && value !== undefined) {
-            el.setAttribute(key, String(value));
-        }
+function setProps(el, props, rootEl) {
+  for (const [key, value] of Object.entries(props)) {
+    if (key === "style" && value && typeof value === "object") {
+        Object.assign(el.style, value);
+        continue
     }
+
+    if (key === "class" || key === "className") {
+    el.className = value ?? "";
+    continue;
+    }
+
+    // here we use the createFrameworkEvent function from delegation.js instead of just addEventlistener
+    if (key === "on" && value && typeof value === "object") {
+      // delegated events live on the ROOT container and not each element
+      for (const [eventName, handler] of Object.entries(value)) {
+        if (typeof handler === "function") {
+        const id = registerEventHandler(handler);
+        el.setAttribute("data-dot-on" + eventName, id);
+        ensureRootListener(rootEl, eventName);
+        }
+      }
+      continue;
+    }
+
+    if (typeof value === "boolean") {
+      if (value) el.setAttribute(key, "");
+      else el.removeAttribute(key);
+      continue;
+    }
+
+    if (value !== undefined && value !== null) {
+      el.setAttribute(key, String(value));
+    }
+  }
 }
 
-function createDomNode(vnode) {
+// here we pass rootEl and use it to setup event delegation
+// vnode: virtual DOM node to convert to real DOM 
+function createDomNode(vnode, rootEl) {
   // Text nodes
   if (typeof vnode === "string" || typeof vnode === "number") {
     return document.createTextNode(String(vnode));
@@ -54,16 +53,16 @@ function createDomNode(vnode) {
   // Component: type is a function
   if (typeof vnode.type === "function") {
     const rendered = vnode.type(vnode.props || {});
-    return createDomNode(rendered);
+    return createDomNode(rendered, rootEl);
   }
 
-  // Element: type is a string like 'div'
+  
   const el = document.createElement(vnode.type);
 
-  setProperty(el, vnode.props || {});
+  setProps(el, vnode.props || {}, rootEl);
 
   for (const child of vnode.children || []) {
-    el.appendChild(createDomNode(child));
+    el.appendChild(createDomNode(child, rootEl));
   }
 
   return el;
@@ -75,7 +74,7 @@ export function mount(vnode, container) {
     throw new Error("mount(): container must be a DOM Element");
   }
 
-  // Simple render strategy for now: clear and re-render
+  // Render strategy: clear container and append new content
   container.innerHTML = "";
-  container.appendChild(createDomNode(vnode));
+  container.appendChild(createDomNode(vnode, container));
 }
