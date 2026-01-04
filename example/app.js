@@ -1,6 +1,10 @@
 import { h, mount, createStore } from "../framework/src/index.js";
 
-const store = createStore({ count: 0 });
+const store = createStore(
+  { count: 0 },
+  { persistKey: "example-state" }
+);
+
 
 function App() {
   const state = store.get();
@@ -18,6 +22,20 @@ function App() {
         },
       },
       ["+1"]
+    ),
+
+    h(
+      "button",
+      {
+        style: { marginLeft: "8px" },
+        on: {
+          click: (e) => {
+            e.preventDefault();
+            store.set({ count: 0 });
+          },
+        },
+      },
+      ["Reset"]
     ),
   ]);
 }
