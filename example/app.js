@@ -1,9 +1,11 @@
-import { h, mount, createStore, createHashRouter } from "../framework/src/index.js";
+import { h, mount, createStore, createHashRouter, createHTTPClient } from "../framework/src/index.js";
 import { HomePage } from "./pages/home.js";
 import { AboutPage } from "./pages/about.js";
 import { NotFoundPage } from "./pages/notFound.js";
 import { TodosPage } from "./pages/todos.js";
-import { createHTTPClient } from "../framework/src/http/httpClient.js";
+import { TodoDetailsPage } from "./pages/todoDetails.js";
+
+
 
 // Persisted app state 
 const store = createStore(
@@ -24,6 +26,7 @@ const router = createHashRouter({
   "/": () => HomePage(),
   "/about": () => AboutPage(),
   "/todos": () => TodosPage(store, api),
+  "/todos/:id": ({ params }) => TodoDetailsPage(store, params),
   "*": () => NotFoundPage(),
 });
 
@@ -71,12 +74,13 @@ function CounterCard() {
 }
 
 function App() {
-  const Page = router.getComponent();
+  const match = router.getMatch();
+  const PageFactory = match.component;
 
   return h("div", {}, [
     Nav(),
     CounterCard(),
-    Page ? Page() : NotFoundPage(),
+    PageFactory ? PageFactory({ params: match.params }) : NotFoundPage(),
   ]);
 }
 

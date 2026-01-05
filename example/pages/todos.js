@@ -1,3 +1,4 @@
+
 import { h } from "../../framework/src/index.js";
 
 export function TodosPage(store, api) {
@@ -32,7 +33,10 @@ export function TodosPage(store, api) {
 
   return h("div", {}, [
     h("h2", {}, ["Todos"]),
-    h("ul", {}, todos.map((t) => h("li", {}, [t.title]))),
+    h("ul", {}, todos.map((t) => h("li", {}, [
+      h("a", { href: "#/todos/" + t.id }, [t.title])
+    ])
+  )),
     h(
       "button",
       {

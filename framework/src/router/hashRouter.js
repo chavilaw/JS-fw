@@ -7,10 +7,49 @@ export function createHashRouter(routes) {
   function getPath() {
     return location.hash.replace("#", "") || "/";
   }
-
+  
   function notify() {
     currentPath = getPath();
     listeners.forEach((fn) => fn(currentPath));
+  }
+
+  function normalizePath(path) {
+  if (!path) return "/";
+  // Remove trailing slash except for "/"
+  if (path.length > 1 && path.endsWith("/")) return path.slice(0, -1);
+  return path;
+  }
+  // in dynamic routing, we need to find the best match for the current path
+  function matchRoute(pattern, path) {
+  // wildcard
+  if (pattern === "*") return { params: {} };
+
+  pattern = normalizePath(pattern);
+  path = normalizePath(path);
+
+  const patternParts = pattern.split("/").filter(Boolean);
+  const pathParts = path.split("/").filter(Boolean);
+
+  if (patternParts.length !== pathParts.length) return null;
+
+  const params = {};
+
+  for (let i = 0; i < patternParts.length; i++) {
+    const p = patternParts[i];
+    const v = pathParts[i];
+
+    // dynamic param
+    if (p.startsWith(":")) {
+      const key = p.slice(1);
+      params[key] = decodeURIComponent(v);
+      continue;
+    }
+
+    // static segment must match
+    if (p !== v) return null;
+  }
+
+  return { params };
   }
 
 
@@ -46,8 +85,25 @@ export function createHashRouter(routes) {
     return () => listeners.delete(fn);
   }
 
-  function getComponent() {
-    return routes[currentPath] || routes["*"] || null;
+  // this is in the dynamic routing to get the best match
+  function getMatch() {
+  const path = normalizePath(currentPath);
+
+  // Try all patterns except "*" first
+  for (const [pattern, component] of Object.entries(routes)) {
+    if (pattern === "*") continue;
+    const matched = matchRoute(pattern, path);
+    if (matched) {
+      return { component, params: matched.params, path };
+    }
+  }
+
+  // Fallback to wildcard if exists
+  if (routes["*"]) {
+    return { component: routes["*"], params: {}, path };
+  }
+
+  return { component: null, params: {}, path };
   }
 
   // Framework-controlled navigation: intercept internal hash links
@@ -71,7 +127,7 @@ export function createHashRouter(routes) {
     navigate,
     subscribe,
     getPath: () => currentPath,
-    getComponent,
+    getMatch,
     attachLinkInterceptor,
   };
 }
