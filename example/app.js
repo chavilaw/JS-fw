@@ -3,6 +3,7 @@ import { HomePage } from "./pages/home.js";
 import { AboutPage } from "./pages/about.js";
 import { NotFoundPage } from "./pages/notFound.js";
 import { TodosPage } from "./pages/todos.js";
+import { createHTTPClient } from "../framework/src/http/httpClient.js";
 
 // Persisted app state 
 const store = createStore(
@@ -14,11 +15,15 @@ const store = createStore(
   { persistKey: "example-state" }
 );
 
+const api = createHTTPClient({
+  baseURL: "/api",
+});
+
 // Router: path -> component factory
 const router = createHashRouter({
   "/": () => HomePage(),
   "/about": () => AboutPage(),
-  "/todos": () => TodosPage(store),
+  "/todos": () => TodosPage(store, api),
   "*": () => NotFoundPage(),
 });
 

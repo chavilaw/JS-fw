@@ -1,13 +1,11 @@
 import { h } from "../../framework/src/index.js";
 
-export function TodosPage(store) {
+export function TodosPage(store, api) {
   const state = store.get();
 
-  // If not loaded, show a button to load from server
   if (!state.todosLoaded) {
     return h("div", {}, [
       h("h2", {}, ["Todos"]),
-      h("p", {}, ["Todos not loaded yet."]),
       h(
         "button",
         {
@@ -15,18 +13,17 @@ export function TodosPage(store) {
             click: async (e) => {
               e.preventDefault();
 
-              const res = await fetch("/api/todos");
-              const data = await res.json();
+              const todos = await api.get("/todos");
 
               store.set((s) => ({
                 ...s,
-                todos: data,
+                todos,
                 todosLoaded: true,
               }));
             },
           },
         },
-        ["Load todos from API"]
+        ["Load todos from server"]
       ),
     ]);
   }
