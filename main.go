@@ -10,30 +10,25 @@ import (
 	"time"
 )
 
-// root safe main.go
 // The Go server exists only to serve static frontend files and provide a minimal API for demonstrating HTTP functionality.
 //  All application logic lives in the JavaScript framework.
-
-type Todo struct {
-	ID        int    `json:"id"`
-	Title     string `json:"title"`
-	Active    bool   `json:"active"`
-	Completed bool   `json:"completed"`
-	Deleted   bool   `json:"deleted"`
-}
-
-var todos = []Todo{
-	{ID: 1, Title: "Take dog for a walk", Active: true, Completed: false, Deleted: false},
-	{ID: 2, Title: "Buy groceries", Active: true, Completed: false, Deleted: false},
-}
 
 func main() {
 	mux := http.NewServeMux()
 
 	// API
-	mux.HandleFunc("/api/todos", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/todo", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(todos)
+
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		_ = json.NewEncoder(w).Encode(map[string]any{
+			"message":  "Hello from API",
+			"features": []string{"HTTP client", "State store", "Routing", "Event delegation"},
+		})
 	})
 
 	mux.HandleFunc("/example/", func(w http.ResponseWriter, r *http.Request) {

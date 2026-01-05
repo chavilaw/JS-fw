@@ -12,7 +12,6 @@ const store = createStore(
   {
     count: 0,
     todos: [],
-    todosLoaded: false,
   },
   { persistKey: "example-state" }
 );
@@ -25,7 +24,7 @@ const api = createHTTPClient({
 const router = createHashRouter({
   "/": () => HomePage(),
   "/about": () => AboutPage(),
-  "/todos": () => TodosPage(store, api),
+  "/todos": () => TodosPage(store),
   "/todos/:id": ({ params }) => TodoDetailsPage(store, params),
   "*": () => NotFoundPage(),
 });
@@ -44,7 +43,8 @@ function CounterCard() {
   const state = store.get();
 
   return h("div", { style: { border: "1px solid #ccc", padding: "12px", borderRadius: "8px", marginBottom: "12px" } }, [
-    h("p", {}, ["Count: ", String(state.count)]),
+    h("p", {}, ["Simple counter to demonstrate functionality"]),
+    h("p", {}, [" Count: ", String(state.count)]),
     h(
       "button",
       {
