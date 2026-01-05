@@ -13,9 +13,26 @@ export function createHashRouter(routes) {
     listeners.forEach((fn) => fn(currentPath));
   }
 
+
+  //failsafe normalize URL to include hash if missing
+  function normalizeURL() {
+    // If we already have a hash route, nothing to normalize
+    if (location.hash) return;
+
+    // Take whatever comes after "/example" and treat it as the route path
+    const afterExample = location.pathname.split("/example")[1] || "/";
+    const path = afterExample.startsWith("/") ? afterExample : "/" + afterExample;
+
+    // Force canonical SPA URL so the base path becomes "/example/"
+    // This prevents "/example/about#/todos" style URLs
+    location.replace("/example/#" + path);
+  }
+
+
   function start() {
+    normalizeURL();
     window.addEventListener("hashchange", notify);
-    notify(); // initial
+    notify();
   }
 
   function navigate(path) {
@@ -63,4 +80,4 @@ export function createHashRouter(routes) {
 // hash-based router allows navigation via URL hash changes
 // e.g., example.com/#/home, example.com/#/about
 // this is useful for this framework because we are specifically looking for a client-side routing solution
-//  without server-side routing support. This keeps routing logic inside the framework rather than relying on the browser.
+//  without server-side routing support. This keeps routing logic inside the framework

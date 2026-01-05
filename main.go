@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -33,12 +36,19 @@ func main() {
 		_ = json.NewEncoder(w).Encode(todos)
 	})
 
-	// Static serving
-	mux.Handle("/example/",
-		http.StripPrefix("/example/",
-			http.FileServer(http.Dir("./example")),
-		),
-	)
+	mux.HandleFunc("/example/", func(w http.ResponseWriter, r *http.Request) {
+		rel := strings.TrimPrefix(r.URL.Path, "/example/")
+		localPath := filepath.Join("example", rel)
+
+		// If requested file exists, serve it
+		if _, err := os.Stat(localPath); err == nil {
+			http.ServeFile(w, r, localPath)
+			return
+		}
+
+		// Otherwise serve SPA entry (index.html)
+		http.ServeFile(w, r, filepath.Join("example", "index.html"))
+	})
 
 	mux.Handle("/framework/",
 		http.StripPrefix("/framework/",
