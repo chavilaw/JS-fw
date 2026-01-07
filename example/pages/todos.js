@@ -19,7 +19,7 @@ export function TodosPage(store) {
     h(
       "form",
       {
-        style: { marginBottom: "12px" },
+        class: "form-group",
         on: {
           submit: (e) => {
             e.preventDefault();
@@ -48,74 +48,79 @@ export function TodosPage(store) {
           type: "text",
           placeholder: "Add a new todo",
           defaultValue: draftTitle,
-          style: { padding: "6px", minWidth: "260px" },
           on: {
             input: (e) => {
               draftTitle = e.target.value;
             },
           },
         }),
-        h(
-          "button",
-          { type: "submit", style: { marginLeft: "8px" } },
-          ["Add"]
-        ),
+        h("button", { type: "submit" }, ["Add"]),
       ]
     ),
 
     // empty state
     todos.length === 0
-      ? h("p", {}, ["No todos yet. Add one above!"])
+      ? h("div", { class: "empty-state" }, [
+          h("p", {}, ["No todos yet. Add one above!"]),
+        ])
       : h(
           "ul",
-          {},
+          { class: "todo-list" },
           todos.map((t) =>
-            h("li", { style: { marginBottom: "6px" } }, [
-              // link to details page if you have dynamic routes
-              h("a", { href: "#/todos/" + t.id }, [t.title]),
+            h(
+              "li",
+              {
+                class: "todo-item" + (t.completed ? " completed" : ""),
+              },
+              [
+                h("div", { class: "todo-title" }, [
+                  h("a", { href: "#/todos/" + t.id }, [t.title]),
+                ]),
+                h("div", { class: "todo-actions" }, [
+                  // toggle complete
+                  h(
+                    "button",
+                    {
+                      class: (t.completed ? "secondary" : "success") + " small",
+                      on: {
+                        click: (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
 
-              // toggle complete
-              h(
-                "button",
-                {
-                  style: { marginLeft: "8px" },
-                  on: {
-                    click: (e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-
-                      store.set((s) => ({
-                        ...s,
-                        todos: s.todos.map((x) =>
-                          x.id === t.id ? { ...x, completed: !x.completed } : x
-                        ),
-                      }));
+                          store.set((s) => ({
+                            ...s,
+                            todos: s.todos.map((x) =>
+                              x.id === t.id ? { ...x, completed: !x.completed } : x
+                            ),
+                          }));
+                        },
+                      },
                     },
-                  },
-                },
-                [t.completed ? "Mark active" : "Mark done"]
-              ),
+                    [t.completed ? "Mark active" : "Mark done"]
+                  ),
 
-              // delete
-              h(
-                "button",
-                {
-                  style: { marginLeft: "8px" },
-                  on: {
-                    click: (e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                  // delete
+                  h(
+                    "button",
+                    {
+                      class: "danger small",
+                      on: {
+                        click: (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
 
-                      store.set((s) => ({
-                        ...s,
-                        todos: s.todos.filter((x) => x.id !== t.id),
-                      }));
+                          store.set((s) => ({
+                            ...s,
+                            todos: s.todos.filter((x) => x.id !== t.id),
+                          }));
+                        },
+                      },
                     },
-                  },
-                },
-                ["Delete"]
-              ),
-            ])
+                    ["Delete"]
+                  ),
+                ]),
+              ]
+            )
           )
         ),
   ]);

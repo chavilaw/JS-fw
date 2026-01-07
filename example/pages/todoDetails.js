@@ -12,14 +12,26 @@ export function TodoDetailsPage(store, params) {
     return h("div", {}, [
       h("h2", {}, ["Todo details"]),
       h("p", {}, ["Todo not found. Load todos first from the Todos page."]),
-      h("a", { href: "#/todos" }, ["Back to Todos"]),
+      h("a", { href: "#/todos", class: "back-link" }, ["← Back to Todos"]),
     ]);
   }
 
   return h("div", {}, [
     h("h2", {}, ["Todo details"]),
-    h("p", {}, ["ID: " + String(todo.id)]),
-    h("p", {}, ["Title: " + todo.title]),
-    h("a", { href: "#/todos" }, ["Back to Todos"]),
+    h("div", { style: { marginTop: "20px" } }, [
+      h("p", { style: { marginBottom: "12px" } }, [
+        h("strong", {}, ["ID: "]),
+        String(todo.id),
+      ]),
+      h("p", { style: { marginBottom: "12px" } }, [
+        h("strong", {}, ["Title: "]),
+        todo.title,
+      ]),
+      h("p", { style: { marginBottom: "12px" } }, [
+        h("strong", {}, ["Status: "]),
+        todo.completed ? "Completed" : "Active",
+      ]),
+    ]),
+    h("a", { href: "#/todos", class: "back-link" }, ["← Back to Todos"]),
   ]);
 }

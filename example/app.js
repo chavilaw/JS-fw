@@ -30,11 +30,9 @@ const router = createHashRouter({
 });
 
 function Nav() {
-  return h("nav", { style: { marginBottom: "12px" } }, [
+  return h("nav", {}, [
     h("a", { href: "#/" }, ["Home"]),
-    " | ",
     h("a", { href: "#/todos" }, ["Todos"]),
-    " | ",
     h("a", { href: "#/about" }, ["About"]),
   ]);
 }
@@ -42,9 +40,9 @@ function Nav() {
 function CounterCard() {
   const state = store.get();
 
-  return h("div", { style: { border: "1px solid #ccc", padding: "12px", borderRadius: "8px", marginBottom: "12px" } }, [
+  return h("div", { class: "card" }, [
     h("p", {}, ["Simple counter to demonstrate functionality"]),
-    h("p", {}, [" Count: ", String(state.count)]),
+    h("p", {}, ["Count: ", String(state.count)]),
     h(
       "button",
       {
@@ -60,6 +58,7 @@ function CounterCard() {
     h(
       "button",
       {
+        class: "secondary",
         style: { marginLeft: "8px" },
         on: {
           click: (e) => {
@@ -80,7 +79,9 @@ function App() {
   return h("div", {}, [
     Nav(),
     CounterCard(),
-    PageFactory ? PageFactory({ params: match.params }) : NotFoundPage(),
+    h("div", { class: "page-content" }, [
+      PageFactory ? PageFactory({ params: match.params }) : NotFoundPage(),
+    ]),
   ]);
 }
 
