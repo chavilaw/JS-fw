@@ -1,5 +1,5 @@
 const styles = {
-  container: { maxWidth: '600px', margin: '0 auto', padding: '2rem' },
+  container: { maxWidth: '600px', margin: '0 auto', padding: '2rem', borderRadius: '8px' },
   title: {
     fontSize: '2rem',
     marginBottom: '1.5rem',
@@ -7,14 +7,15 @@ const styles = {
     fontWeight: '300',
     letterSpacing: '2px',
     borderBottom: '2px solid #00d4ff',
-    paddingBottom: '0.75rem'
+    paddingBottom: '0.75rem',
+    borderRadius: '4px'
   },
   errorBox: {
     padding: '1rem',
     backgroundColor: '#ff4444',
     color: 'white',
     marginBottom: '1rem',
-    borderRadius: '4px'
+    borderRadius: '6px'
   },
   loading: { color: '#00d4ff', marginBottom: '1rem' },
   input: {
@@ -24,8 +25,9 @@ const styles = {
     backgroundColor: '#1a1a1a',
     border: '1px solid #333',
     color: '#e0e0e0',
-    fontFamily: "'Courier New', monospace",
-    fontSize: '1rem'
+    fontFamily: "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, 'Apple Color Emoji', Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol'",
+    fontSize: '1rem',
+    borderRadius: '6px'
   },
   button: {
     padding: '0.75rem 1.5rem',
@@ -34,8 +36,9 @@ const styles = {
     color: '#0f0f0f',
     cursor: 'pointer',
     fontWeight: '600',
-    fontFamily: "'Courier New', monospace",
-    fontSize: '0.95rem'
+    fontFamily: "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, 'Apple Color Emoji', Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol'",
+    fontSize: '0.95rem',
+    borderRadius: '6px'
   },
   deleteButton: {
     padding: '0.4rem 0.8rem',
@@ -44,13 +47,15 @@ const styles = {
     color: 'white',
     border: 'none',
     cursor: 'pointer',
-    marginLeft: '1rem'
+    marginLeft: '1rem',
+    borderRadius: '6px'
   },
   todoItem: {
     padding: '1rem',
     marginBottom: '0.5rem',
     backgroundColor: '#1a1a1a',
     borderLeft: '3px solid #00d4ff',
+    borderRadius: '6px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center'
@@ -188,7 +193,9 @@ MiniFW.createApp({
               color: state._currentRoute === '#/' ? '#00d4ff' : '#888',
               marginRight: '1rem',
               textDecoration: 'none',
-              fontWeight: state._currentRoute === '#/' ? 'bold' : 'normal'
+              fontWeight: state._currentRoute === '#/' ? 'bold' : 'normal',
+              borderRadius: '6px',
+              padding: '0.25rem 0.5rem'
             }
           }, 'Home'),
           MiniFW.createElement('a', {
@@ -198,7 +205,9 @@ MiniFW.createApp({
               color: state._currentRoute === '#/about' ? '#00d4ff' : '#888',
               marginRight: '1rem',
               textDecoration: 'none',
-              fontWeight: state._currentRoute === '#/about' ? 'bold' : 'normal'
+              fontWeight: state._currentRoute === '#/about' ? 'bold' : 'normal',
+              borderRadius: '6px',
+              padding: '0.25rem 0.5rem'
             }
           }, 'About'),
           MiniFW.createElement('span', {
@@ -267,7 +276,7 @@ MiniFW.createApp({
         
         // Stats
         state.todos.length > 0 ? MiniFW.createElement('div', {
-          style: { marginTop: '2rem', padding: '1rem', backgroundColor: '#1a1a1a', borderRadius: '4px', fontSize: '0.9rem', color: '#888' }
+          style: { marginTop: '2rem', padding: '1rem', backgroundColor: '#1a1a1a', borderRadius: '6px', fontSize: '0.9rem', color: '#888' }
         },
           `Total: ${state.todos.length} | `,
           `Active: ${state.todos.filter(t => !t.completed).length} | `,
@@ -288,7 +297,9 @@ MiniFW.createApp({
             style: {
               color: '#888',
               marginRight: '1rem',
-              textDecoration: 'none'
+              textDecoration: 'none',
+              borderRadius: '6px',
+              padding: '0.25rem 0.5rem'
             }
           }, 'Home'),
           MiniFW.createElement('a', {
@@ -298,7 +309,9 @@ MiniFW.createApp({
               color: '#00d4ff',
               marginRight: '1rem',
               textDecoration: 'none',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              borderRadius: '6px',
+              padding: '0.25rem 0.5rem'
             }
           }, 'About'),
           MiniFW.createElement('span', {
@@ -324,7 +337,7 @@ MiniFW.createApp({
             MiniFW.createElement('li', null, '✅ Style Manipulation - Dynamic styling')
           ),
           MiniFW.createElement('p', {
-            style: { marginTop: '2rem', padding: '1rem', backgroundColor: '#1a1a1a', borderRadius: '4px' }
+            style: { marginTop: '2rem', padding: '1rem', backgroundColor: '#1a1a1a', borderRadius: '6px' }
           }, `Current route: ${state._currentRoute || '#/about'}`),
           MiniFW.createElement('button', {
             'data-event': 'click:goHome',
@@ -347,14 +360,14 @@ MiniFW.createApp({
           MiniFW.createElement('a', {
             href: '#/',
             'data-event': 'click:navigateHome',
-            style: { color: '#888', marginRight: '1rem', textDecoration: 'none' }
+            style: { color: '#888', marginRight: '1rem', textDecoration: 'none', borderRadius: '6px', padding: '0.25rem 0.5rem' }
           }, '← Back to Home')
         ),
         
         todo ? MiniFW.createElement('div', null,
           MiniFW.createElement('h1', { style: styles.title }, `Todo #${todoId}`),
           MiniFW.createElement('div', {
-            style: { padding: '1.5rem', backgroundColor: '#1a1a1a', borderRadius: '4px', marginBottom: '1rem' }
+            style: { padding: '1.5rem', backgroundColor: '#1a1a1a', borderRadius: '6px', marginBottom: '1rem' }
           },
             MiniFW.createElement('p', {
               style: { fontSize: '1.2rem', marginBottom: '1rem', color: '#e0e0e0' }
@@ -375,7 +388,7 @@ MiniFW.createApp({
     
     "#/404": (state, setState) => {
       return MiniFW.createElement('div', {
-        style: { textAlign: 'center', padding: '2rem' }
+        style: { textAlign: 'center', padding: '2rem', borderRadius: '8px' }
       },
         MiniFW.createElement('h1', { style: { color: '#00d4ff' } }, '404 - Page Not Found'),
         MiniFW.createElement('p', {
